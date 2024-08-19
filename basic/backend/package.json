@@ -1,0 +1,12 @@
+{
+  "name": "hapi-file-upload",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@hapi/hapi": "^21.0.1",
+    "@hapi/inert": "^6.0.4"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
