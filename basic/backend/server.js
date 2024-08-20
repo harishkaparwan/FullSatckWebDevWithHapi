@@ -18,6 +18,17 @@ const init = async () => {
   });
 
   await server.register(Inert);
+  server.route({
+    method: 'GET',
+    path: '/{param*}',
+    handler: {
+        directory: {
+            path: Path.join(__dirname, 'public'),
+            redirectToSlash: true,
+            index: ['index.html']
+        }
+    }
+});
 
   server.route({
     method: "POST",
@@ -68,15 +79,24 @@ fileArrayData.map((file) => {
 return h.response("Node JS uploaded successfully").code(200);
   
     },
-  },
-  {
-    method: "GET",
-    path: "/verify",
-    handler: (request, h) => {
-     return h.response("Node JS uploaded successfully").code(200);
-    },
   }
 );
+server.route({
+  method: "GET",
+  path: "/verify",
+  handler: (request, h) => {
+   return h.response("Node JS uploaded successfully").code(200);
+  }
+  });
+// Catch-all route to serve the React app
+server.route({
+  method: 'GET',
+  path: '/{any*}',
+  handler: (request, h) => {
+      return h.file(Path.join(__dirname, 'public', 'index.html'));
+  }
+});
+
 
   await server.start();
   console.log("Server running on %s", server.info.uri);

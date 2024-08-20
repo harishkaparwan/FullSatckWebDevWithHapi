@@ -1,7 +1,7 @@
 # Stage 1: Build React frontend
 FROM node:18-alpine AS frontend-build
 
-WORKDIR /app/frontend
+WORKDIR /usr/local/hck/frontend
 
 # Install frontend dependencies and build the React app
 COPY frontend/package.json ./
@@ -13,7 +13,7 @@ RUN npm run build
 # Stage 2: Set up Node.js backend
 FROM node:18-alpine AS backend
 
-WORKDIR /app/backend
+WORKDIR /usr/local/lowes/backend
 
 # Install backend dependencies
 COPY backend/package.json ./
@@ -23,7 +23,7 @@ RUN npm install
 COPY backend/ ./
 
 # Copy the built React frontend from the frontend-build stage
-COPY --from=frontend-build /app/frontend/build /app/backend/public
+COPY --from=frontend-build /usr/local/hck/frontend/build /usr/local/lowes/backend/public
 
 # Expose the port the backend will run on
 EXPOSE 3000
@@ -31,25 +31,24 @@ EXPOSE 3000
 # Stage 3: Pull Python image and set up the Python environment
 FROM python:3.10-slim AS python-env
 
-WORKDIR /app
+WORKDIR /usr/local/lowes
 
 # Copy the Python script into the container
-#COPY backend/requirements.txt /app/requirements.txt
+COPY backend/requirements.txt /usr/local/lowes/requirements.txt
 
 # Install any Python dependencies if needed
-COPY backend/requirements.txt /app/
 RUN pip install -r requirements.txt
 
 # Final Stage: Combine backend and Python environments
 FROM node:18-alpine
 
-WORKDIR /app/backend
+WORKDIR /usr/local/lowes/backend
 
 # Copy the backend and frontend setup from the backend stage
-COPY --from=backend /app/backend /app/backend
+COPY --from=backend /usr/local/lowes/backend /usr/local/lowes/backend
 
 # Copy the Python script from the python-env stage
-#COPY --from=python-env /app/script.py /app/backend/script.py
+#COPY --from=python-env /usr/local/lowes/script.py /usr/local/lowes/backend/script.py
 
 # Expose the port the backend will run on
 EXPOSE 3000
